@@ -43,6 +43,7 @@
       <HintPath>..\packages\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -51,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ProductCategory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -58,6 +60,16 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Csla-Templates Read Me.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AdventureWorks.Configuration\AdventureWorks.Configuration.csproj">
+      <Project>{84b5d861-7b04-4daa-ad9a-f390fbf21d43}</Project>
+      <Name>AdventureWorks.Configuration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AdventureWorks.Interfaces\AdventureWorks.BizObjects.Interfaces.csproj">
+      <Project>{01fda8a2-c024-4e9c-98db-34d45fe392af}</Project>
+      <Name>AdventureWorks.BizObjects.Interfaces</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
