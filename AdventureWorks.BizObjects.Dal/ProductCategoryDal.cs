@@ -12,7 +12,7 @@ using System.Configuration;
 
 namespace AdventureWorks.BizObjects.Dal
 {
-    public class ProductCategoryDal : IProductCategory
+    public class ProductCategoryDal : IProductCategoryDal
     {
         public int Id
         {
@@ -80,9 +80,9 @@ where ProductCategoryID = @Id";
                     {
                         while (sdr.Read())
                         {
-                            this.Id = sdr.GetInt32("Id");
+                            this.Id = sdr.GetInt32("ProductCategoryID");
                             this.Name = sdr.GetString("Name");
-                            this.RowGuidId = sdr.GetGuid("rowguidid");
+                            this.RowGuidId = sdr.GetGuid("rowguid");
                             this.ModifiedDate = sdr.GetSmartDate("ModifiedDate");
                             rowCount++;
                         }
@@ -132,6 +132,30 @@ delete from Production.ProductCategory where ProductCategoryID = @Id and Modifie
                     return (int)cmd.ExecuteNonQuery();
                 }
             }
+        }
+
+        public List<int> RetreiveCollection()
+        {
+            string query = @"SELECT ProductCategoryID FROM Production.ProductCategory ";
+
+            List<int> result = new List<int>();
+
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["AdventureWorks"].ConnectionString))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    using (SafeDataReader sdr = new SafeDataReader(cmd.ExecuteReader()))
+                    {
+                        while (sdr.Read())
+                        {
+                            result.Add(sdr.GetInt32("ProductCategoryID"));
+                        }
+                    }
+                }
+            }
+
+            return result;
         }
     }
 }

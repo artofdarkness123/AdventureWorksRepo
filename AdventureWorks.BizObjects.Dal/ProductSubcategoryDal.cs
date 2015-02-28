@@ -12,7 +12,7 @@ using System.Configuration;
 
 namespace AdventureWorks.BizObjects.Dal
 {
-    public class ProductSubcategoryDal : IProductSubcategory
+    public class ProductSubcategoryDal : IProductSubcategoryDal
     {
         public int Id
         {

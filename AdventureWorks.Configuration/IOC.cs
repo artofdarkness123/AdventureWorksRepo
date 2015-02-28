@@ -15,7 +15,7 @@ namespace AdventureWorks.Configuration
         public static void ConfigureContainer() 
         {
             var section = (UnityConfigurationSection)ConfigurationManager.GetSection("unity");
-            IOC.Container = new UnityContainer().LoadConfiguration(section);
+            IOC.Container = new UnityContainer().LoadConfiguration(section);            
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AdventureWorks.BizObjects.Interfaces
 {
-    public interface IProductSubcategory
+    public interface IProductSubcategoryDal
     {
         int Id { get; }
         int CategoryId { get; }

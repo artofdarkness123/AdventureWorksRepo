@@ -1,7 +1,10 @@
 using System;
-using Csla;
 using System.ComponentModel.DataAnnotations;
+using AdventureWorks.BizObjects.Interfaces;
+using AdventureWorks.Configuration;
+using Csla;
 using Csla.Rules;
+using Microsoft.Practices.Unity;
 
 namespace AdventureWorks.BizObjects
 {
@@ -15,32 +18,23 @@ namespace AdventureWorks.BizObjects
         [Display(Name = "ID")]
         public int Id
         {
-            get { return CanReadProperty(IdProperty) ? GetProperty(IdProperty, id) : default(int); }
-            private set
-            {
-                if (CanWriteProperty(IdProperty)) { SetProperty(IdProperty, ref id, value); }
-            }
+            get { return GetProperty(IdProperty, id); }
+            private set { SetProperty(IdProperty, ref id, value); }
         }
 
         public static readonly PropertyInfo<string> NameProperty = RegisterProperty<string>(p => p.Name, "Name");
         [Display(Name = "Name")]
         public string Name
         {
-            get { return CanReadProperty(NameProperty) ? GetProperty(NameProperty) : String.Empty; }
-            set
-            {
-                if (CanWriteProperty(NameProperty))
-                {
-                    SetProperty(NameProperty, value);
-                }
-            }
+            get { return GetProperty(NameProperty); }
+            set { SetProperty(NameProperty, value); }
         }
 
         public static readonly PropertyInfo<Guid> RowGuidIdProperty = RegisterProperty<Guid>(c => c.RowGuidId, "Row GUID ID");
         [Display(Name = "Row GUID ID")]
         public Guid RowGuidId
         {
-            get { return CanReadProperty(RowGuidIdProperty) ? GetProperty(RowGuidIdProperty) : Guid.Empty; }
+            get { return GetProperty(RowGuidIdProperty); }
             private set { LoadProperty(RowGuidIdProperty, value); }
         }
 
@@ -48,7 +42,7 @@ namespace AdventureWorks.BizObjects
         [Display(Name = "Modified Date")]
         public string ModifiedDate
         {
-            get { return CanReadProperty(ModifiedDateProperty) ? GetPropertyConvert<SmartDate, string>(ModifiedDateProperty) : SmartDate.EmptyValue.MinDate.ToString(); }
+            get { return GetPropertyConvert<SmartDate, string>(ModifiedDateProperty); }
             private set { LoadPropertyConvert<SmartDate, string>(ModifiedDateProperty, value); }
         }
         #endregion
@@ -93,7 +87,23 @@ namespace AdventureWorks.BizObjects
 
         private void Child_Fetch(object childData)
         {
-            // TODO: load values
+            var dal = IOC.Container.Resolve<IProductCategoryDal>();
+
+            if (childData is int)
+            {
+                int rowCount = dal.Read((int)childData);
+
+                if (rowCount != 1)
+                    throw new InvalidOperationException("Invalid number of rows retrieved");
+                else
+                {
+                    this.id = dal.Id;
+                    // this.LoadProperty(IdProperty, dal.Id);
+                    this.LoadProperty(NameProperty, dal.Name);
+                    this.LoadProperty(RowGuidIdProperty, dal.RowGuidId);
+                    this.LoadProperty(ModifiedDateProperty, dal.ModifiedDate);
+                }
+            }
         }
 
         private void Child_Insert(object parent)

@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{01FDA8A2-C024-4E9C-98DB-34D45FE392AF}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{D5C63710-6FEC-4B6E-8E85-F8206769BDCC}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AdventureWorks.BizObjects.Interfaces</RootNamespace>
-    <AssemblyName>AdventureWorks.BizObjects.Interfaces</AssemblyName>
+    <RootNamespace>TestApp</RootNamespace>
+    <AssemblyName>TestApp</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -30,10 +32,19 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Csla">
+    <Reference Include="Csla, Version=4.5.700.0, Culture=neutral, PublicKeyToken=93be5fdc093e4c30, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\CSLA-Core.4.5.700\lib\net45\Csla.dll</HintPath>
     </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.2\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -42,12 +53,34 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IProductCategoryDal.cs" />
-    <Compile Include="IProductSubcategoryDal.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AdventureWorks.BizObjects.Dal\AdventureWorks.BizObjects.Dal.csproj">
+      <Project>{890daf2a-bb1d-4208-9709-010d30876091}</Project>
+      <Name>AdventureWorks.BizObjects.Dal</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AdventureWorks.BizObjects.EFDal\AdventureWorks.BizObjects.EFDal.csproj">
+      <Project>{96951fc4-f011-4f76-9172-3e5655595f00}</Project>
+      <Name>AdventureWorks.BizObjects.EFDal</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AdventureWorks.BizObjects\AdventureWorks.BizObjects.csproj">
+      <Project>{ea613eaf-8f2c-4552-afc7-26534e1506f2}</Project>
+      <Name>AdventureWorks.BizObjects</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AdventureWorks.Configuration\AdventureWorks.Configuration.csproj">
+      <Project>{84b5d861-7b04-4daa-ad9a-f390fbf21d43}</Project>
+      <Name>AdventureWorks.Configuration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AdventureWorks.Interfaces\AdventureWorks.BizObjects.Interfaces.csproj">
+      <Project>{01fda8a2-c024-4e9c-98db-34d45fe392af}</Project>
+      <Name>AdventureWorks.BizObjects.Interfaces</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AdventureWorks.BizObjects.Interfaces
 {
-    public interface IProductCategory
+    public interface IProductCategoryDal
     {
         int Id { get; }
         string Name { get; }
@@ -21,5 +21,7 @@ namespace AdventureWorks.BizObjects.Interfaces
         int Update(int id, string name, Guid rowGuidId, SmartDate modifiedDate);
 
         int Delete(int id, SmartDate modifiedDate);
+
+        List<int> RetreiveCollection();
     }
 }
