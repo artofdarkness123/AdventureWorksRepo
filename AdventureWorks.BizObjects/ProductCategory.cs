@@ -13,10 +13,10 @@ namespace AdventureWorks.BizObjects
     {
         #region Business Methods
         // example with private backing field
-        public static readonly PropertyInfo<int> IdProperty = RegisterProperty<int>(p => p.Id, "ID", 0, RelationshipTypes.PrivateField);
-        private int id = IdProperty.DefaultValue;
+        public static readonly PropertyInfo<int?> IdProperty = RegisterProperty<int?>(p => p.Id, "ID", null, RelationshipTypes.PrivateField);
+        private int? id = IdProperty.DefaultValue;
         [Display(Name = "ID")]
-        public int Id
+        public int? Id
         {
             get { return GetProperty(IdProperty, id); }
             private set { SetProperty(IdProperty, ref id, value); }
@@ -84,41 +84,47 @@ namespace AdventureWorks.BizObjects
             // omit this override if you have no defaults to set
             base.Child_Create();
         }
-
+        
         private void Child_Fetch(object childData)
         {
-            var dal = IOC.Container.Resolve<IProductCategoryDal>();
+            var dal = childData as IProductCategoryDal;
 
-            if (childData is int)
+            if (childData != null)
             {
-                int rowCount = dal.Read((int)childData);
-
-                if (rowCount != 1)
-                    throw new InvalidOperationException("Invalid number of rows retrieved");
-                else
-                {
-                    this.id = dal.Id;
-                    // this.LoadProperty(IdProperty, dal.Id);
-                    this.LoadProperty(NameProperty, dal.Name);
-                    this.LoadProperty(RowGuidIdProperty, dal.RowGuidId);
-                    this.LoadProperty(ModifiedDateProperty, dal.ModifiedDate);
-                }
+                this.id = dal.Id;
+                this.LoadProperty(NameProperty, dal.Name);
+                this.LoadProperty(RowGuidIdProperty, dal.RowGuidId);
+                this.LoadProperty(ModifiedDateProperty, dal.ModifiedDate);
             }
         }
 
         private void Child_Insert(object parent)
         {
-            // TODO: insert values
+            var dal = parent as IProductCategoryDal;
+            int tempId = dal.Create(this.Name);
+
+            if (tempId <= 0)
+                throw new InvalidOperationException("Creation failed.");
+            else
+                this.id = tempId;
         }
 
         private void Child_Update(object parent)
         {
-            // TODO: update values
+            var dal = parent as IProductCategoryDal;
+            int rowsAffected = dal.Update(this.id, this.Name, this.RowGuidId, SmartDate.Parse(this.ModifiedDate));
+
+            if (rowsAffected != 1)
+                throw new InvalidOperationException("Invalid number of rows updated");
         }
 
         private void Child_DeleteSelf(object parent)
         {
-            // TODO: delete values
+            var dal = parent as IProductCategoryDal;
+            int rowsDeleted = dal.Delete(this.id, SmartDate.Parse(this.ModifiedDate));
+
+            if (rowsDeleted != 1)
+                throw new InvalidOperationException("Invalid number of rows deleted");
         }
         #endregion
     }

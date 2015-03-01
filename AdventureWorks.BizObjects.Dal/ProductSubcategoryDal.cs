@@ -58,7 +58,7 @@ select SCOPE_IDENTITY() as Id";
                 {
                     cmd.Parameters.Add("@CategoryId", SqlDbType.Int).Value = categoryId;
                     cmd.Parameters.Add("@Name", SqlDbType.NVarChar, 50).Value = name;
-                    return (int)cmd.ExecuteScalar();
+                    return (int)(decimal)cmd.ExecuteScalar();
                 }
             }
         }

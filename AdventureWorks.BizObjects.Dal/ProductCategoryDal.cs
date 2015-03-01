@@ -14,7 +14,7 @@ namespace AdventureWorks.BizObjects.Dal
 {
     public class ProductCategoryDal : IProductCategoryDal
     {
-        public int Id
+        public int? Id
         {
             get;
             private set;
@@ -52,13 +52,13 @@ select SCOPE_IDENTITY() as Id
                 using (SqlCommand cmd = new SqlCommand(stmt, connection))
                 {
                     cmd.Parameters.Add("@Name", SqlDbType.NVarChar, 50).Value = name;
-                    return (int)cmd.ExecuteScalar();
+                    return (int)(decimal)cmd.ExecuteScalar();
                 }
             }
 
         }
 
-        public int Read(int id)
+        public int Read(int? id)
         {
             string query = @"
 SELECT ProductCategoryID,
@@ -93,7 +93,7 @@ where ProductCategoryID = @Id";
             return rowCount;
         }
 
-        public int Update(int id, string name, Guid rowGuidId, SmartDate modifiedDate)
+        public int Update(int? id, string name, Guid rowGuidId, SmartDate modifiedDate)
         {
             string stmt = @"
 UPDATE Production.ProductCategory
@@ -117,7 +117,7 @@ WHERE ProductCategoryID = @Id and ModifiedDate = @ModDate
             }
         }
 
-        public int Delete(int id, SmartDate modifiedDate)
+        public int Delete(int? id, SmartDate modifiedDate)
         {
             string stmt = @"
 delete from Production.ProductCategory where ProductCategoryID = @Id and ModifiedDate = @ModDate ";
@@ -134,9 +134,12 @@ delete from Production.ProductCategory where ProductCategoryID = @Id and Modifie
             }
         }
 
-        public List<int> RetreiveCollection()
+        public List<int> RetreiveCollection(int? id = null)
         {
-            string query = @"SELECT ProductCategoryID FROM Production.ProductCategory ";
+            string query = @"
+SELECT ProductCategoryID
+FROM Production.ProductCategory
+where (ProductCategoryID = @Id or @Id is null) ";
 
             List<int> result = new List<int>();
 
@@ -145,6 +148,7 @@ delete from Production.ProductCategory where ProductCategoryID = @Id and Modifie
                 connection.Open();
                 using (SqlCommand cmd = new SqlCommand(query, connection))
                 {
+                    cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id.HasValue ? (object)id : (object)DBNull.Value;
                     using (SafeDataReader sdr = new SafeDataReader(cmd.ExecuteReader()))
                     {
                         while (sdr.Read())

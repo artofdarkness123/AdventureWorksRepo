@@ -9,19 +9,19 @@ namespace AdventureWorks.BizObjects.Interfaces
 {
     public interface IProductCategoryDal
     {
-        int Id { get; }
+        int? Id { get; }
         string Name { get; }
         Guid RowGuidId { get; }
         SmartDate ModifiedDate { get; }
 
         int Create(string name);
 
-        int Read(int id);
+        int Read(int? id);
 
-        int Update(int id, string name, Guid rowGuidId, SmartDate modifiedDate);
+        int Update(int? id, string name, Guid rowGuidId, SmartDate modifiedDate);
 
-        int Delete(int id, SmartDate modifiedDate);
+        int Delete(int? id, SmartDate modifiedDate);
 
-        List<int> RetreiveCollection();
+        List<int> RetreiveCollection(int? id = null);
     }
 }

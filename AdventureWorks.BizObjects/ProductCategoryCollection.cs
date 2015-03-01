@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using AdventureWorks.BizObjects.Interfaces;
 using AdventureWorks.Configuration;
 using Csla;
-using Csla.Rules;
 using Microsoft.Practices.Unity;
 
 namespace AdventureWorks.BizObjects
@@ -13,34 +11,64 @@ namespace AdventureWorks.BizObjects
     public class ProductCategoryCollection :
       BusinessListBase<ProductCategoryCollection, ProductCategory>
     {
+        #region Authorization Rules
+        private static void AddObjectAuthorizationRules()
+        {
+            // TODO: add authorization rules
+            //AuthorizationRules.AllowGet(typeof(ProductCategoryCollection), "Role");
+        }
+        #endregion
+
         #region Factory Methods
 
-        internal static ProductCategoryCollection NewProductCategoryCollection()
+        public static ProductCategoryCollection NewProductCategoryCollection()
         {
-            return DataPortal.CreateChild<ProductCategoryCollection>();
+            return DataPortal.Create<ProductCategoryCollection>();
         }
-
-        internal static ProductCategoryCollection GetProductCategoryCollection(
-          object childData)
+        
+        public static ProductCategoryCollection GetProductCategoryCollection(int? id = null)
         {
-            return DataPortal.FetchChild<ProductCategoryCollection>(childData);
+            return DataPortal.Fetch<ProductCategoryCollection>(new SingleCriteria<int?>(id));
         }
 
         private ProductCategoryCollection()
-        { }
+        { /* Require use of factory methods */ }
+
         #endregion
 
         #region Data Access
-        private void Child_Fetch(object childData)
+        private void DataPortal_Fetch(object criteria)
         {
             RaiseListChangedEvents = false;
 
-            var dal = IOC.Container.Resolve<IProductCategoryDal>();
+            if (criteria is SingleCriteria<int?>)
+            {
+                var keyCriteria = criteria as SingleCriteria<int?>;
 
-            foreach (var child in dal.RetreiveCollection())
-                this.Add(ProductCategory.GetProductCategory(child));
+                var dal = IOC.Container.Resolve<IProductCategoryDal>();
+
+                foreach (int child in dal.RetreiveCollection(keyCriteria.Value))
+                {
+                    int rowCount = dal.Read(child);
+
+                    if (rowCount != 1)
+                        throw new InvalidOperationException("Invalid number of rows retrieved");
+                    else
+                    {
+                        this.Add(ProductCategory.GetProductCategory(dal));
+                    }
+                }
+            }
 
             RaiseListChangedEvents = true;
+        }
+
+        [Transactional(TransactionalTypes.TransactionScope)]
+        protected override void DataPortal_Update()
+        {
+            // TODO: open database, update values
+            var dal = IOC.Container.Resolve<IProductCategoryDal>();
+            base.Child_Update(dal);
         }
         #endregion
     }

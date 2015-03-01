@@ -16,12 +16,16 @@ namespace TestApp
             {
                 IOC.ConfigureContainer();
 
-                var collection = ProductCategoryCollection.GetProductCategoryCollection(null);
+                var collection = ProductCategoryCollection.GetProductCategoryCollection();
 
-                foreach (ProductCategory c in collection)
+                foreach (ProductCategory c in collection.OrderBy(b => b.Name))
                 {
-                    Console.WriteLine(c.RowGuidId);
+                    Console.WriteLine(c.Name + " " + c.ModifiedDate);
                 }
+
+                ////var newCat = collection.AddNew();
+                ////newCat.Name = "Electronics";
+                ////collection.Save();
             }
             catch (Exception ex)
             {
