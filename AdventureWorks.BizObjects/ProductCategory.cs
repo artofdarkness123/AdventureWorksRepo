@@ -44,7 +44,7 @@ namespace AdventureWorks.BizObjects
         {
             get { return GetPropertyConvert<SmartDate, string>(ModifiedDateProperty); }
             private set { LoadPropertyConvert<SmartDate, string>(ModifiedDateProperty, value); }
-        }
+        }        
         #endregion
 
         #region Business Rules
@@ -101,27 +101,37 @@ namespace AdventureWorks.BizObjects
         private void Child_Insert(object parent)
         {
             var dal = parent as IProductCategoryDal;
-            int tempId = dal.Create(this.Name);
+            int tempId = dal.Create(this.ReadProperty(NameProperty));
 
             if (tempId <= 0)
                 throw new InvalidOperationException("Creation failed.");
             else
                 this.id = tempId;
+
+            dal.Read(this.id);
+            this.Child_Fetch(dal);
         }
 
         private void Child_Update(object parent)
         {
             var dal = parent as IProductCategoryDal;
-            int rowsAffected = dal.Update(this.id, this.Name, this.RowGuidId, SmartDate.Parse(this.ModifiedDate));
+            int rowsAffected = dal.Update(
+                this.id, 
+                this.ReadProperty(NameProperty), 
+                this.ReadProperty(RowGuidIdProperty), 
+                this.ReadProperty(ModifiedDateProperty));
 
             if (rowsAffected != 1)
                 throw new InvalidOperationException("Invalid number of rows updated");
+
+            dal.Read(this.id);
+            this.Child_Fetch(dal);
         }
 
         private void Child_DeleteSelf(object parent)
         {
             var dal = parent as IProductCategoryDal;
-            int rowsDeleted = dal.Delete(this.id, SmartDate.Parse(this.ModifiedDate));
+            int rowsDeleted = dal.Delete(this.id, this.ReadProperty(ModifiedDateProperty));
 
             if (rowsDeleted != 1)
                 throw new InvalidOperationException("Invalid number of rows deleted");

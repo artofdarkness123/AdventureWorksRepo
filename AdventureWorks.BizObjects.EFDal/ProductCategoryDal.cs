@@ -36,7 +36,13 @@ namespace AdventureWorks.BizObjects.EFDal
 
         public int Create(string name)
         {
-            throw new NotImplementedException();
+            using (var entities = new AdventureWorks2014Entities())
+            {
+                entities.Database.Log += WriteLog;
+                var model = entities.ProductCategories.Add(new ProductCategory { Name = name, rowguid = Guid.NewGuid(), ModifiedDate = DateTime.Now });
+                entities.SaveChanges();
+                return model.ProductCategoryID;
+            }
         }
 
         public int Read(int? id)
@@ -44,9 +50,7 @@ namespace AdventureWorks.BizObjects.EFDal
             using (var entities = new AdventureWorks2014Entities())
             {
                 entities.Database.Log += WriteLog;
-
                 var model = entities.ProductCategories.SingleOrDefault(b => b.ProductCategoryID == id);
-
                 this.Id = model.ProductCategoryID;
                 this.Name = model.Name;
                 this.RowGuidId = model.rowguid;
@@ -58,12 +62,35 @@ namespace AdventureWorks.BizObjects.EFDal
 
         public int Update(int? id, string name, Guid rowGuidId, SmartDate modifiedDate)
         {
-            throw new NotImplementedException();
+            using (var entities = new AdventureWorks2014Entities())
+            {
+                try
+                {
+                    entities.Database.Log += WriteLog;
+                    var model = entities.ProductCategories.SingleOrDefault(b => b.ProductCategoryID == id);
+                    model.ModifiedDate = DateTime.Now;
+                    model.rowguid = rowGuidId;
+                    model.Name = name;
+                    return entities.SaveChanges();
+                }
+                catch (System.Data.Entity.Validation.DbEntityValidationException ex)
+                {
+                    var temp = ex.EntityValidationErrors.Select(b => b.ValidationErrors.Select(c => c.ErrorMessage)).ToList();
+                    throw;
+                }
+            }
         }
 
         public int Delete(int? id, SmartDate modifiedDate)
         {
-            throw new NotImplementedException();
+            using (var entities = new AdventureWorks2014Entities())
+            {
+                entities.Database.Log += WriteLog;
+                var model = entities.ProductCategories
+                    .SingleOrDefault(b => b.ProductCategoryID == id && b.ModifiedDate == modifiedDate.Date);
+                entities.ProductCategories.Remove(model);
+                return entities.SaveChanges();
+            }
         }
 
         public List<int> RetreiveCollection(int? id = null)
@@ -80,9 +107,9 @@ namespace AdventureWorks.BizObjects.EFDal
 
         private void WriteLog(string text)
         {
-            //Console.ForegroundColor = ConsoleColor.Yellow;
-            //Console.WriteLine(text);
-            //Console.ForegroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine(text);
+            Console.ForegroundColor = ConsoleColor.White;
         }
     }
 }

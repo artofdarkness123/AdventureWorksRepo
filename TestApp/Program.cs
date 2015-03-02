@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AdventureWorks.BizObjects;
 using AdventureWorks.Configuration;
+using Csla;
 
 namespace TestApp
 {
@@ -16,16 +17,15 @@ namespace TestApp
             {
                 IOC.ConfigureContainer();
 
-                var collection = ProductCategoryCollection.GetProductCategoryCollection();
-
-                foreach (ProductCategory c in collection.OrderBy(b => b.Name))
-                {
-                    Console.WriteLine(c.Name + " " + c.ModifiedDate);
-                }
-
-                ////var newCat = collection.AddNew();
-                ////newCat.Name = "Electronics";
-                ////collection.Save();
+                var collection = ProductCategoryCollection.GetProductCategoryCollection(11);
+                var childCat = collection.FirstOrDefault();
+                childCat = collection.FirstOrDefault();
+                collection.Remove(childCat);
+                collection.Save();
+            }
+            catch (DataPortalException ex)
+            {
+                Console.WriteLine(ex.BusinessException.ToString());
             }
             catch (Exception ex)
             {
