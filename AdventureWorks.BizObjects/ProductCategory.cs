@@ -38,7 +38,7 @@ namespace AdventureWorks.BizObjects
             private set { LoadProperty(RowGuidIdProperty, value); }
         }
 
-        public static readonly PropertyInfo<SmartDate> ModifiedDateProperty = RegisterProperty<SmartDate>(c => c.ModifiedDate, "Modified Date");
+        public static readonly PropertyInfo<SmartDate> ModifiedDateProperty = RegisterProperty<SmartDate>(c => c.ModifiedDate, "Modified Date", new SmartDate());
         [Display(Name = "Modified Date")]
         public string ModifiedDate
         {
@@ -51,7 +51,7 @@ namespace AdventureWorks.BizObjects
         protected override void AddBusinessRules()
         {
             // TODO: add validation rules
-            //BusinessRules.AddRule(new Rule(), IdProperty);
+            BusinessRules.AddRule(new Csla.Rules.CommonRules.Required(NameProperty));
             BusinessRules.AddRule(new Csla.Rules.CommonRules.MaxLength(NameProperty, 50));
         }
 
@@ -89,7 +89,7 @@ namespace AdventureWorks.BizObjects
         {
             var dal = childData as IProductCategoryDal;
 
-            if (childData != null)
+            if (dal != null)
             {
                 this.id = dal.Id;
                 this.LoadProperty(NameProperty, dal.Name);

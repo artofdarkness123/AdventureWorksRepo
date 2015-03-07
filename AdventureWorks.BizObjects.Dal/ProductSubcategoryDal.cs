@@ -14,13 +14,13 @@ namespace AdventureWorks.BizObjects.Dal
 {
     public class ProductSubcategoryDal : IProductSubcategoryDal
     {
-        public int Id
+        public int? Id
         {
             get;
             private set;
         }
 
-        public int CategoryId
+        public int? CategoryId
         {
             get;
             private set;
@@ -44,7 +44,7 @@ namespace AdventureWorks.BizObjects.Dal
             private set;
         }
 
-        public int Create(int categoryId, string name)
+        public int Create(int? categoryId, string name)
         {
             string stmt = @"insert into Production.ProductSubcategory(ProductCategoryID, Name)
 values(@CategoryId, @Name)
@@ -63,12 +63,12 @@ select SCOPE_IDENTITY() as Id";
             }
         }
 
-        public int Read(int id)
+        public int Read(int? id)
         {
             string query = @"
 select ProductSubcategoryID, ProductCategoryID, Name, rowguid, ModifiedDate
 from Production.ProductSubcategory
-where ProductCategoryID = @Id
+where ProductSubcategoryID = @Id
 ";
             int rowCount = 0;
             using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["AdventureWorks"].ConnectionString))
@@ -81,10 +81,11 @@ where ProductCategoryID = @Id
                     {
                         while (sdr.Read())
                         {
+                            rowCount++;
                             this.Id = sdr.GetInt32("ProductSubcategoryID");
                             this.CategoryId = sdr.GetInt32("ProductCategoryID");
                             this.Name = sdr.GetString("Name");
-                            this.RowGuidId = sdr.GetGuid("rowguidid");
+                            this.RowGuidId = sdr.GetGuid("rowguid");
                             this.ModifiedDate = sdr.GetSmartDate("ModifiedDate");
                         }
                     }
@@ -94,7 +95,7 @@ where ProductCategoryID = @Id
             return rowCount;
         }
 
-        public int Update(int id, int categoryId, string name, Guid rowGuidId, SmartDate modifiedDate)
+        public int Update(int? id, int? categoryId, string name, Guid rowGuidId, SmartDate modifiedDate)
         {
             string stmt = @"
 UPDATE Production.ProductSubcategory
@@ -120,7 +121,7 @@ WHERE ProductCategoryID = @Id and ModifiedDate = @ModDate
             }
         }
 
-        public int Delete(int id, SmartDate modifiedDate)
+        public int Delete(int? id, SmartDate modifiedDate)
         {
             string stmt = @"
 DELETE FROM Production.ProductSubcategory WHERE ProductSubcategoryID = @Id and ModifiedDate = @ModDate";
@@ -135,6 +136,34 @@ DELETE FROM Production.ProductSubcategory WHERE ProductSubcategoryID = @Id and M
                     return (int)cmd.ExecuteNonQuery();
                 }
             }
+        }
+
+        public List<int> RetreiveCollection(int? id = null)
+        {
+            string query = @"
+SELECT ProductSubcategoryID
+FROM Production.ProductSubcategory
+where (ProductCategoryID = @Id or @Id is null) ";
+
+            List<int> result = new List<int>();
+
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["AdventureWorks"].ConnectionString))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id.HasValue ? (object)id : (object)DBNull.Value;
+                    using (SafeDataReader sdr = new SafeDataReader(cmd.ExecuteReader()))
+                    {
+                        while (sdr.Read())
+                        {
+                            result.Add(sdr.GetInt32("ProductSubcategoryID"));
+                        }
+                    }
+                }
+            }
+
+            return result;
         }
     }
 }

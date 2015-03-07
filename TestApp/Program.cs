@@ -13,19 +13,27 @@ namespace TestApp
     {
         static void Main(string[] args)
         {
+            ProductCategoryCollection collection = null;
             try
             {
                 IOC.ConfigureContainer();
 
-                var collection = ProductCategoryCollection.GetProductCategoryCollection(11);
+                collection = ProductCategoryCollection.GetProductCategoryCollection();
                 var childCat = collection.FirstOrDefault();
-                childCat = collection.FirstOrDefault();
-                collection.Remove(childCat);
-                collection.Save();
+                ProductSubcategoryCollection subCol = ProductSubcategoryCollection.GetProductSubcategoryCollection(childCat.Id.Value);
+
+                foreach (ProductSubcategory subcategory in subCol)
+                {
+                    Console.WriteLine("cat = {0}. sub = {1}", childCat.Name, subcategory.Name);
+                }
             }
             catch (DataPortalException ex)
             {
                 Console.WriteLine(ex.BusinessException.ToString());
+            }
+            catch (Csla.Rules.ValidationException ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
             catch (Exception ex)
             {
