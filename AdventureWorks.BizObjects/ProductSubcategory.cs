@@ -46,6 +46,8 @@ namespace AdventureWorks.BizObjects
             get { return GetPropertyConvert<SmartDate, string>(ModifiedDateProperty); }
             set { SetPropertyConvert<SmartDate, string>(ModifiedDateProperty, value); }
         }
+
+
         #endregion
 
         #region Business Rules
@@ -114,8 +116,7 @@ namespace AdventureWorks.BizObjects
             else
                 this.id = tempId;
 
-            dal.Read(this.id);
-            this.Child_Fetch(dal);
+            FieldManager.UpdateChildren();
         }
 
         private void Child_Update(object parent)
@@ -131,8 +132,7 @@ namespace AdventureWorks.BizObjects
             if (rowsAffected != 1)
                 throw new InvalidOperationException("Invalid number of rows updated");
 
-            dal.Read(this.id);
-            this.Child_Fetch(dal);
+            FieldManager.UpdateChildren();
         }
 
         private void Child_DeleteSelf(object parent)
@@ -142,6 +142,8 @@ namespace AdventureWorks.BizObjects
 
             if (rowsDeleted != 1)
                 throw new InvalidOperationException("Invalid number of rows deleted");
+
+            FieldManager.UpdateChildren();
         }
         #endregion
     }

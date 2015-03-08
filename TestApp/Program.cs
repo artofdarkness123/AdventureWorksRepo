@@ -18,14 +18,17 @@ namespace TestApp
             {
                 IOC.ConfigureContainer();
 
-                collection = ProductCategoryCollection.GetProductCategoryCollection();
-                var childCat = collection.FirstOrDefault();
-                ProductSubcategoryCollection subCol = ProductSubcategoryCollection.GetProductSubcategoryCollection(childCat.Id.Value);
+                collection = ProductCategoryCollection.NewProductCategoryCollection();
+                var childCat = collection.AddNew();
+                childCat.Name = "Electronics";
 
-                foreach (ProductSubcategory subcategory in subCol)
-                {
-                    Console.WriteLine("cat = {0}. sub = {1}", childCat.Name, subcategory.Name);
-                }
+                var childSub = childCat.SubcategoryCollection.AddNew();
+
+                childSub.Name = "TVs";
+
+                collection.Save();
+
+                Console.WriteLine(childCat.ModifiedDate);
             }
             catch (DataPortalException ex)
             {

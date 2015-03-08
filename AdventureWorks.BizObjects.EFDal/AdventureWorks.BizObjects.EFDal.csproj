@@ -74,6 +74,7 @@
     <Compile Include="ProductSubcategory.cs">
       <DependentUpon>AdventureWorksModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="ProductSubcategoryDal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

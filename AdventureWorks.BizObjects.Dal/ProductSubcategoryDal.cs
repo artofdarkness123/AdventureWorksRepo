@@ -103,7 +103,7 @@ SET ProductCategoryID = @ProductCategoryID,
 Name = @Name,
 rowguid = @rowguid,
 ModifiedDate = GETDATE()
-WHERE ProductCategoryID = @Id and ModifiedDate = @ModDate
+WHERE ProductSubcategoryID = @Id and ModifiedDate = @ModDate
 ";
             using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["AdventureWorks"].ConnectionString))
             {
@@ -113,7 +113,7 @@ WHERE ProductCategoryID = @Id and ModifiedDate = @ModDate
                     cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
                     cmd.Parameters.Add("@ProductCategoryID", SqlDbType.Int).Value = categoryId;
                     cmd.Parameters.Add("@Name", SqlDbType.NVarChar, 50).Value = name;
-                    cmd.Parameters.Add("@rowguidid", SqlDbType.UniqueIdentifier).Value = rowGuidId;
+                    cmd.Parameters.Add("@rowguid", SqlDbType.UniqueIdentifier).Value = rowGuidId;
                     cmd.Parameters.Add("@ModDate", SqlDbType.DateTime).Value = modifiedDate;
 
                     return (int)cmd.ExecuteNonQuery();
