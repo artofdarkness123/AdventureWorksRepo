@@ -47,18 +47,20 @@ namespace AdventureWorks.BizObjects
         }
 
         public static readonly PropertyInfo<ProductSubcategoryCollection> SubcategoryCollectionProperty = RegisterProperty<ProductSubcategoryCollection>(c => c.SubcategoryCollection, "Subcategory Collection", RelationshipTypes.PrivateField);
-        [NotUndoable, NonSerialized]
+        //[NotUndoable, NonSerialized]
         private ProductSubcategoryCollection subcategoryCollection = SubcategoryCollectionProperty.DefaultValue;
         public ProductSubcategoryCollection SubcategoryCollection
         {
             get
             {
-                if (subcategoryCollection == null)
-                    subcategoryCollection = this.id.HasValue 
-                        ? ProductSubcategoryCollection.GetProductSubcategoryCollection(this.id.Value) 
+                if (this.subcategoryCollection == null)
+                {
+                    this.subcategoryCollection = this.id.HasValue
+                        ? ProductSubcategoryCollection.GetProductSubcategoryCollection(this.id.Value)
                         : ProductSubcategoryCollection.NewProductSubcategoryCollection();
+                }
 
-                return GetProperty(SubcategoryCollectionProperty, subcategoryCollection);
+                return GetProperty(SubcategoryCollectionProperty, this.subcategoryCollection);
             }
         }
         #endregion
@@ -124,7 +126,10 @@ namespace AdventureWorks.BizObjects
             else
                 this.id = tempId;
 
-            FieldManager.UpdateChildren();
+            for (int i = 0; i < this.subcategoryCollection.Count; i++)
+                this.subcategoryCollection[i].ProductCategoryId = this.id;
+
+            this.subcategoryCollection.Save();
         }
 
         private void Child_Update(object parent)
@@ -139,18 +144,18 @@ namespace AdventureWorks.BizObjects
             if (rowsAffected != 1)
                 throw new InvalidOperationException("Invalid number of rows updated");
 
-            FieldManager.UpdateChildren();
+            this.subcategoryCollection.Save();
         }
 
         private void Child_DeleteSelf(object parent)
         {
+            this.subcategoryCollection.Save();
+
             var dal = parent as IProductCategoryDal;
             int rowsDeleted = dal.Delete(this.id, this.ReadProperty(ModifiedDateProperty));
 
             if (rowsDeleted != 1)
                 throw new InvalidOperationException("Invalid number of rows deleted");
-
-            FieldManager.UpdateChildren();
         }
         #endregion
     }
